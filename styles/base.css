@@ -1,0 +1,32 @@
+/* ========================================
+   🏗️ BASE STYLES
+   ======================================== */
+
+body {
+    font-family: 'Inter', sans-serif;
+    background: radial-gradient(ellipse at bottom, var(--light-navy) 0%, var(--dark-navy) 100%);
+    color: var(--light-slate);
+    margin: 0;
+    padding: 0;
+    min-height: 100vh;
+}
+
+/* Dark Card Container */
+.dark-card {
+    background-color: var(--light-navy);
+    border: 1px solid var(--lightest-navy);
+    box-shadow: 0 10px 30px -15px rgba(0, 0, 0, 0.7);
+}
+
+/* Hidden utility class */
+.hidden {
+    display: none !important;
+}
+
+/* Flex utilities */
+.flex-col {
+    display: flex;
+    flex-direction: column;
+}
+
+

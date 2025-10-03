@@ -1,0 +1,106 @@
+/* ========================================
+   🧩 COMPONENT STYLES
+   ======================================== */
+
+/* --- Form Inputs --- */
+.input-field {
+    background-color: var(--dark-navy);
+    border: 1px solid var(--lightest-navy);
+    color: var(--lightest-slate);
+    transition: all 0.2s ease-in-out;
+}
+
+.input-field:focus {
+    background-color: var(--light-navy);
+    outline: none;
+    box-shadow: 0 0 0 2px var(--accent-cyan);
+}
+
+.input-field::placeholder {
+    color: var(--slate);
+}
+
+/* --- Buttons --- */
+.primary-btn {
+    background-color: var(--accent-cyan);
+    color: var(--dark-navy);
+    font-weight: 600;
+    transition: all 0.3s ease;
+}
+
+.primary-btn:hover {
+    background-color: rgba(100, 255, 218, 0.85);
+    transform: translateY(-3px);
+    box-shadow: 0 10px 20px -10px rgba(100, 255, 218, 0.3);
+}
+
+.primary-btn:disabled {
+    background-color: var(--slate);
+    cursor: not-allowed;
+    transform: translateY(0);
+    box-shadow: none;
+}
+
+.secondary-btn {
+    color: var(--accent-cyan);
+    background-color: transparent;
+    border: 1px solid var(--accent-cyan);
+    transition: all 0.3s ease;
+}
+
+.secondary-btn:hover {
+    background-color: rgba(100, 255, 218, 0.1);
+    transform: translateY(-2px);
+}
+
+/* --- Tabs --- */
+.tab-btn {
+    transition: color 0.2s ease-in-out, border-color 0.2s ease-in-out;
+}
+
+.tab-btn.active {
+    border-color: var(--accent-cyan);
+    color: var(--accent-cyan);
+    font-weight: 600;
+}
+
+.main-tab-btn {
+    transition: all 0.2s ease-in-out;
+}
+
+.main-tab-btn.active {
+    background-color: var(--accent-cyan);
+    color: var(--dark-navy);
+    box-shadow: 0 4px 14px 0 rgba(100, 255, 218, 0.2);
+}
+
+.main-tab-btn:not(.active):hover {
+    background-color: var(--lightest-navy);
+}
+
+/* --- Feature Card --- */
+.feature-card {
+    background: var(--light-navy);
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    border: 1px solid var(--lightest-navy);
+}
+
+.feature-card:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 20px 30px -10px rgba(0, 0, 0, 0.7);
+}
+
+/* --- Error/Success Messages --- */
+.error-message {
+    background-color: var(--error-bg);
+    border: 1px solid var(--error-border);
+    color: var(--error-text);
+}
+
+.success-message {
+    background-color: var(--success-bg);
+    border: 1px solid var(--success-border);
+    color: var(--success-text);
+}
+
+

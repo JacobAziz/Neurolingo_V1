@@ -1,0 +1,29 @@
+/* ========================================
+   🎨 CSS CUSTOM PROPERTIES (Variables)
+   ======================================== */
+
+:root {
+    /* Color Palette - Dark Navy Theme */
+    --dark-navy: #0a192f;
+    --light-navy: #112240;
+    --lightest-navy: #233554;
+    
+    /* Text Colors */
+    --slate: #8892b0;
+    --light-slate: #a8b2d1;
+    --lightest-slate: #ccd6f6;
+    
+    /* Accent Color */
+    --accent-cyan: #64ffda;
+    
+    /* Semantic Colors */
+    --error-bg: rgba(153, 27, 27, 0.5);
+    --error-border: #ef4444;
+    --error-text: #fca5a5;
+    
+    --success-bg: rgba(16, 185, 129, 0.1);
+    --success-border: rgba(16, 185, 129, 0.3);
+    --success-text: #6ee7b7;
+}
+
+

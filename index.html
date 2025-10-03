@@ -1,0 +1,352 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>NeuroLingo Hub</title>
+    
+    <!-- External Dependencies -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+    
+    <!-- Custom Styles -->
+    <link rel="stylesheet" href="./styles/variables.css">
+    <link rel="stylesheet" href="./styles/base.css">
+    <link rel="stylesheet" href="./styles/components.css">
+    <link rel="stylesheet" href="./styles/animations.css">
+</head>
+<body class="flex items-center justify-center min-h-screen p-4">
+
+    <!-- ========================================
+         🔐 AUTHENTICATION SCREEN
+         ======================================== -->
+    <div id="auth-container" class="screen w-full max-w-md">
+        <div class="dark-card rounded-2xl shadow-lg p-8">
+            <h2 class="text-3xl font-bold text-center text-gray-100 mb-2">Welcome Back!</h2>
+            <p class="text-center text-gray-400 mb-8">Sign in to access the Hub.</p>
+            
+            <form id="login-form" class="space-y-4">
+                <div>
+                    <label for="email" class="block text-sm font-medium text-gray-300">Email Address</label>
+                    <input type="email" id="email" name="email" required class="input-field mt-1 block w-full px-3 py-2 rounded-md shadow-sm placeholder-gray-500 focus:outline-none sm:text-sm">
+                </div>
+                <div>
+                    <label for="password" class="block text-sm font-medium text-gray-300">Password</label>
+                    <input type="password" id="password" name="password" required class="input-field mt-1 block w-full px-3 py-2 rounded-md shadow-sm placeholder-gray-500 focus:outline-none sm:text-sm">
+                </div>
+                <div class="pt-4">
+                    <button type="submit" id="login-btn" class="primary-btn w-full flex justify-center py-3 px-4 border border-transparent rounded-md shadow-sm text-sm">
+                        Sign In
+                    </button>
+                </div>
+            </form>
+            
+            <div id="auth-error-message" class="hidden mt-4 bg-red-900/50 border border-red-500 text-red-300 px-4 py-3 rounded-lg text-sm" role="alert"></div>
+
+            <div class="mt-6">
+                <div class="relative">
+                    <div class="absolute inset-0 flex items-center">
+                        <div class="w-full border-t border-gray-700"></div>
+                    </div>
+                    <div class="relative flex justify-center text-sm">
+                        <span class="px-2" style="background-color: var(--light-navy); color: var(--slate)">Or continue with</span>
+                    </div>
+                </div>
+                
+                <div class="mt-6">
+                    <button id="google-login-btn" class="w-full inline-flex justify-center py-2 px-4 border rounded-md shadow-sm text-sm font-medium hover:bg-gray-700" style="color: var(--light-slate); border-color: var(--lightest-navy); background-color: var(--light-navy)">
+                        <span class="sr-only">Sign in with Google</span>
+                        <svg class="w-5 h-5" fill="currentColor" viewBox="0 0 48 48"><path fill="#FFC107" d="M43.611,20.083H42V20H24v8h11.303c-1.649,4.657-6.08,8-11.303,8c-6.627,0-12-5.373-12-12c0-6.627,5.373-12,12-12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C12.955,4,4,12.955,4,24s8.955,20,20,20s20-8.955,20-20C44,22.659,43.862,21.35,43.611,20.083z"></path><path fill="#FF3D00" d="M6.306,14.691l6.571,4.819C14.655,15.108,18.961,12,24,12c3.059,0,5.842,1.154,7.961,3.039l5.657-5.657C34.046,6.053,29.268,4,24,4C16.318,4,9.656,8.337,6.306,14.691z"></path><path fill="#4CAF50" d="M24,44c5.166,0,9.86-1.977,13.409-5.192l-6.19-5.238C29.211,35.091,26.715,36,24,36c-5.223,0-9.657-3.356-11.303-7.962l-6.571,4.819C9.656,39.663,16.318,44,24,44z"></path><path fill="#1976D2" d="M43.611,20.083H42V20H24v8h11.303c-0.792,2.237-2.231,4.166-4.087,5.574l6.19,5.238C41.38,36.405,44,30.638,44,24C44,22.659,43.862,21.35,43.611,20.083z"></path></svg>
+                    </button>
+                </div>
+            </div>
+            
+            <p class="mt-6 text-center text-sm text-gray-400">
+                Don't have an account? 
+                <a href="#" id="show-signup-link" class="font-medium" style="color: var(--accent-cyan)">Sign up</a>
+            </p>
+        </div>
+    </div>
+    
+    <!-- ========================================
+         📱 MAIN APPLICATION WRAPPER
+         ======================================== -->
+    <div id="main-app-wrapper" class="screen hidden w-full max-w-4xl">
+        
+        <!-- ========================================
+             🏠 SCREEN 1: Feature Selection
+             ======================================== -->
+        <div id="selection-container" class="screen">
+            <div class="dark-card rounded-2xl shadow-lg p-6 md:p-8">
+                <header class="text-center mb-8 relative">
+                    <div class="flex justify-center items-center gap-4 mb-2">
+                        <svg class="w-16 h-16" viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">
+                            <defs>
+                                <linearGradient id="brainGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+                                    <stop offset="0%" style="stop-color:#64ffda;"/>
+                                    <stop offset="100%" style="stop-color:#00c6ff;"/>
+                                </linearGradient>
+                            </defs>
+                            <path d="M100,25 C45,25 20,60 40,100 C20,140 50,180 100,175 C150,180 180,140 160,100 C180,60 155,25 100,25 Z" fill="none" stroke="url(#brainGradient)" stroke-width="2" opacity="0.4"/>
+                            <g stroke="url(#brainGradient)" stroke-width="1.5" stroke-linecap="round">
+                                <line x1="100" y1="100" x2="75" y2="75"></line>
+                                <line x1="100" y1="100" x2="125" y2="75"></line>
+                                <line x1="100" y1="100" x2="70" y2="125"></line>
+                                <line x1="100" y1="100" x2="130" y2="125"></line>
+                                <line x1="100" y1="100" x2="100" y2="45"></line>
+                                <line x1="75" y1="75" x2="55" y2="55"></line>
+                                <line x1="75" y1="75" x2="50" y2="100"></line>
+                                <line x1="75" y1="75" x2="100" y2="45"></line>
+                                <line x1="125" y1="75" x2="145" y2="55"></line>
+                                <line x1="125" y1="75" x2="150" y2="100"></line>
+                                <line x1="125" y1="75" x2="100" y2="45"></line>
+                                <line x1="70" y1="125" x2="50" y2="100"></line>
+                                <line x1="70" y1="125" x2="90" y2="160"></line>
+                                <line x1="130" y1="125" x2="150" y2="100"></line>
+                                <line x1="130" y1="125" x2="110" y2="160"></line>
+                                <line x1="50" y1="100" x2="55" y2="55"></line>
+                                <line x1="150" y1="100" x2="145" y2="55"></line>
+                                <line x1="90" y1="160" x2="110" y2="160"></line>
+                            </g>
+                            <g fill="url(#brainGradient)">
+                                <circle cx="100" cy="100" r="10"></circle>
+                                <circle cx="75" cy="75" r="7"></circle>
+                                <circle cx="125" cy="75" r="7"></circle>
+                                <circle cx="70" cy="125" r="6"></circle>
+                                <circle cx="130" cy="125" r="6"></circle>
+                                <circle cx="100" cy="45" r="7"></circle>
+                                <circle cx="55" cy="55" r="5"></circle>
+                                <circle cx="145" cy="55" r="5"></circle>
+                                <circle cx="50" cy="100" r="6"></circle>
+                                <circle cx="150" cy="100" r="6"></circle>
+                                <circle cx="90" cy="160" r="5"></circle>
+                                <circle cx="110" cy="160" r="5"></circle>
+                            </g>
+                        </svg>
+                        <h1 class="text-4xl md:text-5xl font-extrabold text-gray-100">NeuroLingo</h1>
+                    </div>
+                    <div class="flex justify-center items-center gap-2 mt-1">
+                        <svg class="w-5 h-auto rounded-sm" viewBox="0 0 5 3" xmlns="http://www.w3.org/2000/svg">
+                            <rect width="5" height="3" fill="#000000"/>
+                            <rect y="1" width="5" height="1" fill="#DD0000"/>
+                            <rect y="2" width="5" height="1" fill="#FFCC00"/>
+                        </svg>
+                        <p class="text-lg text-gray-400 tracking-wide">German Mastery Hub</p>
+                    </div>
+                    <button id="logout-btn" class="secondary-btn absolute top-0 right-0 font-semibold py-2 px-4 rounded-lg shadow-sm text-sm">
+                        Logout
+                    </button>
+                </header>
+                
+                <div class="grid md:grid-cols-2 gap-8">
+                    <!-- Scenarios Card -->
+                    <div id="goto-scenarios-btn" class="feature-card cursor-pointer rounded-xl p-6 flex flex-col items-center text-center">
+                        <div class="bg-gradient-to-br from-cyan-500 to-blue-600 text-white rounded-xl p-4 mb-4 shadow-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"></path>
+                                <circle cx="9" cy="7" r="4"></circle>
+                                <path d="M22 21v-2a4 4 0 0 0-3-3.87"></path>
+                                <path d="M16 3.13a4 4 0 0 1 0 7.75"></path>
+                            </svg>
+                        </div>
+                        <h2 class="text-xl font-bold text-gray-100 mb-2">Real-life Scenarios</h2>
+                        <p class="text-gray-400 text-sm">Generate AI-powered dialogues for everyday situations in Germany.</p>
+                    </div>
+                    
+                    <!-- Analyzer Card -->
+                    <div id="goto-analyzer-btn" class="feature-card cursor-pointer rounded-xl p-6 flex flex-col items-center text-center">
+                        <div class="bg-gradient-to-br from-teal-400 to-green-500 text-white rounded-xl p-4 mb-4 shadow-lg">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-10 w-10" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48"></path>
+                            </svg>
+                        </div>
+                        <h2 class="text-xl font-bold text-gray-100 mb-2">Language Analyzer</h2>
+                        <p class="text-gray-400 text-sm">Get a deep, grammatical breakdown of any German sentence.</p>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================
+             🔬 SCREEN 2: Language Analyzer
+             ======================================== -->
+        <div id="app-container" class="screen hidden">
+            <div class="dark-card rounded-2xl shadow-lg p-6 md:p-8">
+                <header class="text-center mb-8 relative">
+                    <button class="back-to-selection-btn secondary-btn absolute top-0 left-0 font-semibold py-2 px-4 rounded-lg shadow-sm text-sm">
+                        &larr; Back
+                    </button>
+                    <h1 class="text-3xl md:text-4xl font-bold text-gray-100">Language Analyzer</h1>
+                    <p class="text-gray-400 mt-2">Enter a German sentence to get a detailed breakdown.</p>
+                </header>
+                
+                <!-- Voice Selector -->
+                <div class="flex justify-center items-center mb-6 space-x-3">
+                    <label for="voice-select" class="font-medium text-gray-300">Select a Voice:</label>
+                    <select id="voice-select" class="input-field border-gray-700 text-gray-200 text-sm rounded-lg block w-auto p-2">
+                        <!-- Options populated by JavaScript -->
+                    </select>
+                </div>
+                
+                <!-- Input Area -->
+                <div class="mb-6">
+                    <textarea id="german-sentence" class="input-field w-full h-28 p-4 rounded-lg shadow-sm" placeholder="e.g., Ich erinnere mich an den ersten Tag in Berlin."></textarea>
+                    <button id="analyze-btn" class="primary-btn mt-4 w-full py-3 px-6 rounded-lg shadow-md">Analyze Sentence</button>
+                </div>
+                
+                <!-- Loading Indicators -->
+                <div id="loading-indicator" class="hidden flex-col items-center justify-center my-8">
+                    <div class="loader mb-4"></div>
+                    <p class="text-gray-400">Analyzing...</p>
+                </div>
+                
+                <div id="db-indicator" class="hidden flex-col items-center justify-center my-8">
+                    <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="text-green-400 mb-4">
+                        <ellipse cx="12" cy="5" rx="9" ry="3"></ellipse>
+                        <path d="M21 12c0 1.66-4 3-9 3s-9-1.34-9-3"></path>
+                        <path d="M3 5v14c0 1.66 4 3 9 3s9-1.34 9-3V5"></path>
+                    </svg>
+                    <p class="text-gray-400">Found in database, loading result...</p>
+                </div>
+                
+                <!-- Error Message -->
+                <div id="error-message" class="hidden bg-red-900/50 border border-red-500 text-red-300 px-4 py-3 rounded-lg my-4" role="alert">
+                    <strong class="font-bold">Oops!</strong>
+                    <span class="block sm:inline" id="error-text">Something went wrong. Please try again.</span>
+                </div>
+                
+                <!-- Results Container -->
+                <div id="results" class="hidden">
+                    <!-- Main Category Tabs -->
+                    <div class="bg-gray-900/50 rounded-xl p-1 grid grid-cols-2 gap-1 mb-6">
+                        <button id="main-tab-essential" class="main-tab-btn py-3 px-4 text-base rounded-lg" data-category="essential">Essential</button>
+                        <button id="main-tab-supporting" class="main-tab-btn py-3 px-4 text-base rounded-lg" data-category="supporting">Supporting</button>
+                    </div>
+                    
+                    <!-- Sub-tabs -->
+                    <div class="">
+                        <!-- Essential Sub-tabs -->
+                        <div id="sub-tabs-essential" class="sub-tabs-container">
+                            <div class="border-b border-gray-700">
+                                <nav class="flex -mb-px" aria-label="Tabs">
+                                    <button id="tab-translation" class="tab-btn active flex-1 whitespace-nowrap py-4 px-1 text-center border-b-2 font-medium text-sm text-gray-400 border-transparent hover:border-gray-600 hover:text-gray-300" data-tab="translation">Translation</button>
+                                    <button id="tab-vocab" class="tab-btn flex-1 whitespace-nowrap py-4 px-1 text-center border-b-2 font-medium text-sm text-gray-400 border-transparent hover:border-gray-600 hover:text-gray-300" data-tab="vocab">Vocab</button>
+                                    <button id="tab-structure" class="tab-btn flex-1 whitespace-nowrap py-4 px-1 text-center border-b-2 font-medium text-sm text-gray-400 border-transparent hover:border-gray-600 hover:text-gray-300" data-tab="structure">Structure</button>
+                                </nav>
+                            </div>
+                        </div>
+                        
+                        <!-- Supporting Sub-tabs -->
+                        <div id="sub-tabs-supporting" class="sub-tabs-container hidden">
+                            <div class="border-b border-gray-700">
+                                <nav class="flex -mb-px" aria-label="Tabs">
+                                    <button id="tab-deeper" class="tab-btn flex-1 whitespace-nowrap py-4 px-1 text-center border-b-2 font-medium text-sm text-gray-400 border-transparent hover:border-gray-600 hover:text-gray-300" data-tab="deeper">Deeper</button>
+                                    <button id="tab-nuggets" class="tab-btn flex-1 whitespace-nowrap py-4 px-1 text-center border-b-2 font-medium text-sm text-gray-400 border-transparent hover:border-gray-600 hover:text-gray-300" data-tab="nuggets">Nuggets</button>
+                                    <button id="tab-plug" class="tab-btn flex-1 whitespace-nowrap py-4 px-1 text-center border-b-2 font-medium text-sm text-gray-400 border-transparent hover:border-gray-600 hover:text-gray-300" data-tab="plug">Plug & Play</button>
+                                </nav>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <!-- Tab Content -->
+                    <div class="mt-6" id="tab-content-wrapper">
+                        <!-- Content will be injected here by JavaScript -->
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- ========================================
+             🎭 SCREEN 3: Scenarios Generator
+             ======================================== -->
+        <div id="scenarios-container" class="screen hidden">
+            <div class="dark-card rounded-2xl shadow-lg p-6 md:p-8">
+                <header class="text-center mb-8 relative">
+                    <button class="back-to-selection-btn secondary-btn absolute top-0 left-0 font-semibold py-2 px-4 rounded-lg shadow-sm text-sm">
+                        &larr; Back
+                    </button>
+                    <h1 class="text-3xl md:text-4xl font-bold text-gray-100">Real-life Scenarios</h1>
+                    <p class="text-gray-400 mt-2">Generate a dialogue for a specific situation.</p>
+                </header>
+                
+                <div class="space-y-6">
+                    <!-- Step 1: Choose Scenario -->
+                    <div class="bg-gray-900/30 p-4 rounded-xl border border-gray-700">
+                        <label for="scenario-select" class="block text-sm font-semibold text-gray-300 mb-2">1. Choose a Scenario</label>
+                        <select id="scenario-select" class="input-field w-full p-3 rounded-lg shadow-sm">
+                            <!-- Options populated by JavaScript -->
+                        </select>
+                    </div>
+                    
+                    <!-- Step 2: Provide Context -->
+                    <div class="bg-gray-900/30 p-4 rounded-xl border border-gray-700">
+                        <label for="scenario-context" class="block text-sm font-semibold text-gray-300 mb-2">2. Provide a Context</label>
+                        <textarea id="scenario-context" class="input-field w-full h-24 p-3 rounded-lg shadow-sm" placeholder="Describe the situation... e.g., 'I bumped into a friend of mine on the street in Berlin.'"></textarea>
+                        
+                        <div class="mt-3 text-center">
+                            <button id="suggest-context-btn" class="font-semibold text-sm" style="color: var(--accent-cyan)">Or, let AI suggest a context</button>
+                        </div>
+                        
+                        <div id="context-suggestions" class="mt-3 grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-2">
+                            <!-- Suggestions injected here -->
+                        </div>
+                    </div>
+                    
+                    <!-- Step 3: Options -->
+                    <div class="bg-gray-900/30 p-4 rounded-xl border border-gray-700 grid grid-cols-1 md:grid-cols-2 gap-4">
+                        <div>
+                            <label for="dialogue-format" class="block text-sm font-semibold text-gray-300 mb-2">Format</label>
+                            <select id="dialogue-format" class="input-field w-full p-3 rounded-lg shadow-sm">
+                                <option>Face-to-face dialogue</option>
+                                <option>Phone Call Dialogue</option>
+                            </select>
+                        </div>
+                        <div>
+                            <label for="dialogue-length" class="block text-sm font-semibold text-gray-300 mb-2">Length</label>
+                            <select id="dialogue-length" class="input-field w-full p-3 rounded-lg shadow-sm">
+                                <option>Short</option>
+                                <option selected>Medium</option>
+                                <option>Long</option>
+                            </select>
+                        </div>
+                    </div>
+                    
+                    <!-- Generate Button -->
+                    <div>
+                        <button id="generate-dialogue-btn" class="primary-btn w-full py-3 px-6 rounded-lg shadow-md flex items-center justify-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" class="mr-2">
+                                <path d="m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z"/>
+                            </svg>
+                            Generate Dialogue
+                        </button>
+                    </div>
+                </div>
+                
+                <!-- Loading Indicator -->
+                <div id="scenario-loading-indicator" class="hidden flex-col items-center justify-center my-8">
+                    <div class="loader mb-4"></div>
+                    <p class="text-gray-400">Generating your scenario...</p>
+                </div>
+                
+                <!-- Error Message -->
+                <div id="scenario-error-message" class="hidden bg-red-900/50 border border-red-500 text-red-300 px-4 py-3 rounded-lg my-4" role="alert"></div>
+                
+                <!-- Dialogue Output -->
+                <div id="dialogue-output" class="mt-8 hidden">
+                    <!-- Generated dialogue will be injected here -->
+                </div>
+            </div>
+        </div>
+
+    </div>
+    
+    <!-- Hidden Audio Player -->
+    <audio id="audio-player" class="hidden"></audio>
+
+    <!-- Application Scripts (ES6 Modules) -->
+    <script type="module" src="./scripts/main.js"></script>
+</body>
+</html>
+
+
