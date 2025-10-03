@@ -78,6 +78,24 @@
     background-color: var(--lightest-navy);
 }
 
+.history-tab-btn {
+    transition: all 0.2s ease-in-out;
+    color: var(--slate);
+    font-weight: 500;
+}
+
+.history-tab-btn.active {
+    background-color: var(--accent-cyan);
+    color: var(--dark-navy);
+    font-weight: 600;
+    box-shadow: 0 4px 14px 0 rgba(100, 255, 218, 0.2);
+}
+
+.history-tab-btn:not(.active):hover {
+    background-color: var(--lightest-navy);
+    color: var(--lightest-slate);
+}
+
 /* --- Feature Card --- */
 .feature-card {
     background: var(--light-navy);

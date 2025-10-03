@@ -11,12 +11,37 @@ export function initNavigation() {
     screens = {
         selection: document.getElementById('selection-container'),
         analyzer: document.getElementById('app-container'),
-        scenarios: document.getElementById('scenarios-container')
+        scenarios: document.getElementById('scenarios-container'),
+        history: document.getElementById('history-container')
     };
     
     // Set up navigation buttons
-    document.getElementById('goto-analyzer-btn').addEventListener('click', () => showScreen('analyzer'));
-    document.getElementById('goto-scenarios-btn').addEventListener('click', () => showScreen('scenarios'));
+    const analyzerBtn = document.getElementById('goto-analyzer-btn');
+    const scenariosBtn = document.getElementById('goto-scenarios-btn');
+    const historyBtn = document.getElementById('goto-history-btn');
+    
+    if (analyzerBtn) {
+        analyzerBtn.addEventListener('click', () => showScreen('analyzer'));
+    }
+    
+    if (scenariosBtn) {
+        scenariosBtn.addEventListener('click', () => showScreen('scenarios'));
+    }
+    
+    if (historyBtn) {
+        historyBtn.addEventListener('click', () => {
+            console.log('History button clicked'); // Debug log
+            showScreen('history');
+            // Load history when navigating to history screen
+            import('./history.js').then(({ loadUserHistory }) => {
+                loadUserHistory();
+            }).catch(error => {
+                console.error('Failed to load history module:', error);
+            });
+        });
+    } else {
+        console.error('History button not found in DOM');
+    }
     
     // Set up back buttons
     document.querySelectorAll('.back-to-selection-btn').forEach(btn => {

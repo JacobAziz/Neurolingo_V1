@@ -4,7 +4,7 @@ A comprehensive German language learning web application featuring AI-powered se
 
 **Status:** ✅ Fully Refactored & Production Ready  
 **Last Updated:** October 3, 2025  
-**Version:** 2.0 (Modular Architecture)
+**Version:** 2.1 (User History Dashboard Added)
 
 > 📝 **See [ProjectSummary-1.md](./ProjectSummary-1.md)** for complete refactoring details and session notes.
 
@@ -47,7 +47,16 @@ A comprehensive German language learning web application featuring AI-powered se
 - Generated dialogues with German text + English translations
 - TTS support for each dialogue line
 
-### 4. **Text-to-Speech**
+### 4. **User History Dashboard**
+- Personal history tracking for all analyses and scenarios
+- View previously analyzed German sentences
+- Access previously generated dialogue scenarios
+- Organized by type (analyses vs. scenarios) with timestamps
+- Reopen and review past work instantly
+- Delete unwanted history items
+- Fully scoped to authenticated user (privacy-protected)
+
+### 5. **Text-to-Speech**
 - 8 different German voice options
 - Audio playback for words, phrases, and full sentences
 - Download audio as WAV files
@@ -77,6 +86,7 @@ neurolingo-gem-canvas/
 │   ├── analyzer.js                 # Language analyzer core logic
 │   ├── analyzer-renderer.js        # Analyzer results rendering
 │   ├── scenarios.js                # Scenarios generator logic
+│   ├── history.js                  # User history management
 │   ├── tts.js                      # Text-to-speech functionality
 │   ├── audio-utils.js              # Audio processing utilities (base64, PCM to WAV)
 │   └── ui-helpers.js               # UI utility functions (copy, show/hide elements)
@@ -142,13 +152,29 @@ cd Neurolingo_V1
    };
    ```
 
-6. Create a database table (optional, for caching):
+6. **Create Required Database Tables:**
+   
+   a. Create the analysis cache table:
    ```sql
    CREATE TABLE german_analysis (
        sentence TEXT PRIMARY KEY,
        analysis_data JSONB NOT NULL,
        created_at TIMESTAMP DEFAULT NOW()
    );
+   ```
+   
+   b. Create the user history table (see [DATABASE_SETUP.md](./DATABASE_SETUP.md) for complete setup):
+   ```sql
+   CREATE TABLE user_history (
+       id UUID DEFAULT gen_random_uuid() PRIMARY KEY,
+       user_id UUID NOT NULL REFERENCES auth.users(id) ON DELETE CASCADE,
+       type TEXT NOT NULL CHECK (type IN ('analysis', 'scenario')),
+       sentence TEXT,
+       scenario_title TEXT,
+       content JSONB NOT NULL,
+       created_at TIMESTAMP WITH TIME ZONE DEFAULT NOW()
+   );
+   -- Plus indexes and RLS policies (see DATABASE_SETUP.md)
    ```
 
 #### **2.3 Google Gemini API Setup**
@@ -247,8 +273,19 @@ Dialogue generation:
 - AI context suggestions
 - Dialogue generation with customizable format/length
 - Renders speaker-based dialogue with TTS buttons
+- Saves generated scenarios to user history
 
-### **8. Text-to-Speech (`scripts/tts.js`)**
+### **8. User History (`scripts/history.js`)**
+History management:
+- Loads user's previously analyzed sentences
+- Loads user's previously generated scenarios
+- Displays history in categorized tabs (Analyses/Scenarios)
+- Allows viewing previous work (reopens in respective screen)
+- Allows deleting history items
+- Saves new analyses and scenarios to database
+- All queries scoped to authenticated user
+
+### **9. Text-to-Speech (`scripts/tts.js`)**
 Audio functionality:
 - Calls Gemini TTS API
 - Converts base64 PCM to WAV
@@ -256,13 +293,13 @@ Audio functionality:
 - Downloads audio files
 - Manages audio playback state
 
-### **9. Audio Utilities (`scripts/audio-utils.js`)**
+### **10. Audio Utilities (`scripts/audio-utils.js`)**
 Low-level audio processing:
 - Base64 to ArrayBuffer conversion
 - PCM to WAV conversion
 - WAV header generation
 
-### **10. UI Helpers (`scripts/ui-helpers.js`)**
+### **11. UI Helpers (`scripts/ui-helpers.js`)**
 Common UI operations:
 - Copy to clipboard with visual feedback
 - Show/hide elements
@@ -320,6 +357,8 @@ Common UI operations:
 | `analysis_data`| JSONB     | Complete analysis result as JSON     |
 | `created_at`   | TIMESTAMP | Auto-generated timestamp             |
 
+**Purpose:** Cache for sentence analyses to avoid redundant API calls.
+
 **Example `analysis_data` structure:**
 ```json
 {
@@ -331,6 +370,24 @@ Common UI operations:
   "plug_and_play": [{ "german_phrase": "...", "english_meaning": "..." }]
 }
 ```
+
+### **Table: `user_history`**
+
+| Column           | Type      | Description                                    |
+|------------------|-----------|------------------------------------------------|
+| `id`             | UUID      | Primary key (auto-generated)                   |
+| `user_id`        | UUID      | Foreign key to auth.users                      |
+| `type`           | TEXT      | 'analysis' or 'scenario'                       |
+| `sentence`       | TEXT      | German sentence (for analysis type)            |
+| `scenario_title` | TEXT      | Scenario title (for scenario type)             |
+| `content`        | JSONB     | Complete analysis or scenario data             |
+| `created_at`     | TIMESTAMP | Auto-generated timestamp                       |
+
+**Purpose:** Stores user's personal history of analyzed sentences and generated scenarios.
+
+**Security:** Row Level Security (RLS) enabled - users can only access their own records.
+
+**Setup Instructions:** See [DATABASE_SETUP.md](./DATABASE_SETUP.md) for complete SQL schema and setup guide.
 
 ---
 
@@ -403,8 +460,8 @@ This project follows clean code principles:
 ## 🚧 Future Enhancements
 
 Potential features for future development:
-- [ ] User progress tracking
-- [ ] Saved sentences and favorites
+- [x] User progress tracking *(completed)*
+- [x] Saved sentences and favorites *(completed)*
 - [ ] Flashcard generation from analyzed sentences
 - [ ] Speech recognition for pronunciation practice
 - [ ] More language support (French, Spanish, etc.)

@@ -69,7 +69,11 @@ async function getAIContextSuggestions() {
             body: JSON.stringify(payload)
         });
         
-        if (!response.ok) throw new Error('Failed to fetch suggestions.');
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error('Context API Error:', errorData);
+            throw new Error('Failed to fetch suggestions.');
+        }
         
         const result = await response.json();
         const suggestions = JSON.parse(result.candidates[0].content.parts[0].text);
@@ -78,7 +82,7 @@ async function getAIContextSuggestions() {
         
     } catch (error) {
         console.error("Context suggestion error:", error);
-        contextSuggestionsContainer.innerHTML = `<p class="text-red-400 text-sm">Could not generate suggestions.</p>`;
+        contextSuggestionsContainer.innerHTML = `<p class="text-red-400 text-sm">Could not generate suggestions. ${error.message}</p>`;
     } finally {
         suggestContextBtn.textContent = 'Or, let AI suggest a context';
         suggestContextBtn.disabled = false;
@@ -138,22 +142,36 @@ Return a single, valid JSON object with the following structure:
             generationConfig: { responseMimeType: "application/json" }
         };
         
+        console.log('Sending scenario generation request...');
         const response = await fetch(API_URLS.generation, {
             method: 'POST',
             headers: { 'Content-Type': 'application/json' },
             body: JSON.stringify(payload)
         });
         
-        if (!response.ok) throw new Error('Failed to generate dialogue.');
+        console.log('Response status:', response.status);
+        
+        if (!response.ok) {
+            const errorData = await response.json();
+            console.error('API Error:', errorData);
+            throw new Error(`API Error: ${errorData.error?.message || 'Failed to generate dialogue'}`);
+        }
         
         const result = await response.json();
+        console.log('API Response:', result);
+        
         const dialogueData = JSON.parse(result.candidates[0].content.parts[0].text);
+        
+        // Save to user history
+        import('./history.js').then(({ saveScenarioToHistory }) => {
+            saveScenarioToHistory(dialogueData.title, dialogueData);
+        });
         
         renderDialogue(dialogueData);
         
     } catch (error) {
         console.error("Dialogue generation error:", error);
-        scenarioError.textContent = "Sorry, I couldn't generate the dialogue. Please try again.";
+        scenarioError.textContent = `Sorry, I couldn't generate the dialogue. ${error.message || 'Please try again.'}`;
         showElement(scenarioError);
     } finally {
         hideElement(scenarioLoading);
@@ -187,5 +205,11 @@ function renderDialogue(data) {
     showElement(dialogueOutput);
 }
 // 🎨 [End: Render Dialogue]
+
+// 📚 [Start: Render Dialogue from History]
+export function renderDialogueFromHistory(dialogueData) {
+    renderDialogue(dialogueData);
+}
+// 📚 [End: Render Dialogue from History]
 
 

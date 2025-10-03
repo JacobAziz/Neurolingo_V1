@@ -57,10 +57,15 @@ async function handleAnalysis() {
         // 2. Call API if not cached
         const analysisData = await callGeminiAPI(sentence);
         
-        // 3. Save to database
+        // 3. Save to database cache
         await saveToDatabaseCache(sentence, analysisData);
         
-        // 4. Render results
+        // 4. Save to user history
+        import('./history.js').then(({ saveAnalysisToHistory }) => {
+            saveAnalysisToHistory(sentence, analysisData);
+        });
+        
+        // 5. Render results
         renderResults(sentence, analysisData);
         
     } catch (error) {
